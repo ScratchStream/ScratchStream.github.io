@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advert Uploader</title>
+</head>
+<body>
+  <h1>Upload a Video</h1>
+  <input type="file" id="video" accept="video/*"><br><br>
+  <textarea id="message" placeholder="Write your message here..."></textarea><br><br>
+  <button onclick="upload()">Upload</button>
+
+  <p id="status"></p>
+
+  <script>
+    async function upload() {
+      const video = document.getElementById('video').files[0];
+      const message = document.getElementById('message').value;
+      const statusEl = document.getElementById('status');
+
+      if (!video || !message) {
+        statusEl.textContent = "Both video and message are required.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('video', video);
+      formData.append('message', message);
+
+      try {
+        const response = await fetch('https://poodle-relevant-alien.ngrok-free.app/upload', {
+          method: 'POST',
+          headers:{
+            "ngrok-skip-browser-warning":"eee"
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+        statusEl.textContent = result.status === 'success' ?
+          `Uploaded: ${result.filename}` : 'Upload failed.';
+      } catch (err) {
+        statusEl.textContent = 'Error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
